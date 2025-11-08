@@ -13,7 +13,7 @@ export default function WaitlistForm() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/waitlist", {
+      const response = await fetch("/.netlify/functions/waitlist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -21,15 +21,17 @@ export default function WaitlistForm() {
         body: JSON.stringify({ email }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to join waitlist");
+        throw new Error(data?.message || "Failed to join waitlist");
       }
 
       setSubmitted(true);
       setEmail("");
-      setTimeout(() => {
-        setSubmitted(false);
-      }, 5000);
+
+      // Reset submitted state after 5 seconds
+      setTimeout(() => setSubmitted(false), 5000);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An error occurred. Please try again."
